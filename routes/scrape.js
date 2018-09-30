@@ -10,20 +10,12 @@ module.exports = function (app) {
     app.get("/scrape", function (req, res) {
         request("https://www.nytimes.com/", function (error, response, html) {
 
-            // Load the HTML into cheerio and save it to a variable
-            // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
+            
             var $ = cheerio.load(html);
-
-            // An empty array to save the data that we'll scrape
-
-            // Select each element in the HTML body from which you want information.
-            // NOTE: Cheerio selectors function similarly to jQuery's selectors,
-            // but be sure to visit the package's npm page to see how it works
 
             $("article.story").each(function (i, element) {
                 var result = {};
-                // var link = $(element).children().attr("href");
-                // var title = $(element).children().text();
+                
                 result.summary = $(element).children("p.summary").text();
                 result.byline = $(element).children("p.byline").text();
                 result.title = $(element).children("h2").text();
@@ -45,7 +37,6 @@ module.exports = function (app) {
                 }
             });
             res.json({"code" : "success"});
-            // res.json(true);
         });
     });
 
@@ -96,9 +87,7 @@ module.exports = function (app) {
         result.byline = req.body.byline;
         result.title = req.body.title;
         result.link = req.body.link;
-        // Save these results in an object that we'll push into the results array we defined earlier
         var entry = new Save(result);
-        // Now, save that entry to the db
         entry.save(function (err, doc) {
             // Log any errors
             if (err) {
@@ -110,7 +99,6 @@ module.exports = function (app) {
                 res.json(doc);
             }
         });
-        //res.json(result);
     });
 
     // route to delete saved articles
@@ -148,7 +136,6 @@ module.exports = function (app) {
     });
 
 
-    // Create a new note or replace an existing note
     app.post("/notes", function (req, res) {
         if (req.body) {
             var newNote = new Note(req.body);
